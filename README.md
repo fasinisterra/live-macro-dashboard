@@ -27,9 +27,12 @@ the [Observable Plot](https://observablehq.com/plot/) library, wrapped in
 
 ```
 .
-├── app.py                     # Page 1 — the dashboard (layout + render loop)
-├── pages/
-│   └── 1_Correlation_and_Analytics.py    # Page 2 — correlation & statistics
+├── app.py                     # Router: branding, logo, st.navigation
+├── views/
+│   ├── data_sources.py        # "Data Sources" page — the live dashboard
+│   └── analytics.py           # "Analytics" page — correlation & statistics
+├── assets/
+│   └── wsp-logo.svg           # Wall Street Prompt wordmark
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
@@ -40,6 +43,7 @@ the [Observable Plot](https://observablehq.com/plot/) library, wrapped in
 │   ├── config.py              # the nine-series registry + value formatting
 │   ├── fred.py                # FRED fetch, transforms, API-key loading
 │   ├── data.py                # shared @st.cache_data loaders (used by both pages)
+│   ├── branding.py            # Wall Street Prompt theme, logo, header
 │   ├── charts.py              # Observable Plot HTML builder (dashboard)
 │   ├── analytics.py           # panel alignment, correlation, rolling, lead/lag, regression
 │   └── analytics_charts.py    # Observable Plot builders (heatmap, scatter, etc.)
@@ -47,8 +51,9 @@ the [Observable Plot](https://observablehq.com/plot/) library, wrapped in
     └── preview_data.py        # pull every series live and print it (sanity check)
 ```
 
-This is a **Streamlit multipage app**: `app.py` is the dashboard, and the file in
-`pages/` becomes a second page in the sidebar nav.
+This is a **Streamlit multipage app**: `app.py` applies the branding and defines the
+navigation via `st.navigation`, running the two pages in `views/` — **Data Sources**
+(the dashboard) and **Analytics**.
 
 ## 1. Get a free FRED API key
 

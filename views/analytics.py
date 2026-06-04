@@ -1,9 +1,9 @@
-"""Correlation & statistical analytics across the nine macro indicators.
+"""Analytics — correlation & statistics across the nine macro indicators.
 
-A second page of the multipage app. Aligns every series to a common monthly
-frequency, lets you correlate *changes* (to avoid spurious trend correlation),
-and explores relationships with a heatmap, scatter/regression, rolling correlation,
-lead/lag cross-correlation, and a standardized overlay — all in Observable Plot.
+Aligns every series to a common monthly frequency, lets you correlate *changes*
+(to avoid spurious trend correlation), and explores relationships with a heatmap,
+scatter/regression, rolling correlation, lead/lag cross-correlation, and a
+standardized overlay — all in Observable Plot. Page chrome is applied by app.py.
 """
 
 from __future__ import annotations
@@ -14,12 +14,9 @@ import streamlit.components.v1 as components
 
 from src import analytics as A
 from src import analytics_charts as AC
-from src.branding import apply_branding, header
+from src.branding import header
 from src.data import load_frames, load_one
 from src.fred import MissingAPIKeyError
-
-st.set_page_config(page_title="Macro Analytics", layout="wide")
-apply_branding()
 
 KEYS = A.KEYS
 LABEL = A.LABEL
@@ -101,7 +98,7 @@ if transform == "level":
 st.subheader("Correlation matrix")
 corr = A.correlation_matrix(panel, method=method)
 components.html(AC.heatmap_html(corr, SHORT), height=500)
-st.caption("Blue = move together · Red = move opposite · near-white = little linear relationship.")
+st.caption("Green = move together · Slate = move opposite · near-white = little linear relationship.")
 
 # ----- 2) Auto insights --------------------------------------------------------
 pairs = A.ranked_pairs(corr)

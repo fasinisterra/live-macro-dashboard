@@ -12,7 +12,11 @@ Brand tokens (from the template):
 
 from __future__ import annotations
 
+import pathlib
+
 import streamlit as st
+
+_LOGO_FILE = pathlib.Path(__file__).resolve().parent.parent / "assets" / "wsp-logo.svg"
 
 GREEN = "#37A686"
 MINT = "#52F2B8"
@@ -61,6 +65,10 @@ h1, h2, h3, h4, [data-testid="stHeading"]{
 [data-testid="stSidebar"]{ background:var(--wsp-fog); border-right:1px solid var(--wsp-border); }
 [data-testid="stSidebar"] *{ font-family:var(--wsp-sans); }
 
+/* ---- brand logo (top of sidebar) ---- */
+.wsp-logo{ padding:.5rem .15rem .7rem; border-bottom:1px solid var(--wsp-border); margin-bottom:.6rem; }
+.wsp-logo svg{ height:30px; width:auto; display:block; }
+
 /* ---- "figure" cards: white on soft gray, like the report ---- */
 div[data-testid="stVerticalBlockBorderWrapper"][style*="border"]{
   background:#fff; border:1px solid var(--wsp-border) !important; border-radius:3px;
@@ -96,6 +104,15 @@ hr{ border-color:var(--wsp-border); }
 def apply_branding() -> None:
     """Inject the WSP stylesheet. Call once near the top of each page."""
     st.markdown(_CSS, unsafe_allow_html=True)
+
+
+def render_logo() -> None:
+    """Render the WSP wordmark at the top of the sidebar."""
+    try:
+        svg = _LOGO_FILE.read_text()
+    except OSError:
+        return
+    st.sidebar.markdown(f'<div class="wsp-logo">{svg}</div>', unsafe_allow_html=True)
 
 
 def header(title: str, eyebrow: str = "Wall Street Prompt Research") -> None:
