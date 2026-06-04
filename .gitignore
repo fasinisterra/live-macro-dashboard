@@ -1,0 +1,21 @@
+# Secrets — never commit the real key
+.streamlit/secrets.toml
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.python-version
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Local tooling / artifacts (not part of the app)
+.claude/
+.playwright-mcp/
+macro-dashboard*.png
+macro-dashboard*.jpeg
