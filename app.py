@@ -14,17 +14,12 @@ import streamlit.components.v1 as components
 
 from src.charts import CHART_HEIGHT, observable_plot_html
 from src.config import SERIES
-from src.fred import MissingAPIKeyError, apply_transform, latest_and_delta, load_series
+from src.data import load_one
+from src.fred import MissingAPIKeyError, apply_transform, latest_and_delta
 
 st.set_page_config(page_title="Macro Dashboard", page_icon="📈", layout="wide")
 
 LOOKBACKS = {"1Y": 1, "3Y": 3, "5Y": 5, "10Y": 10, "Max": None}
-
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def get_series(series_id: str, start: str | None) -> pd.DataFrame:
-    """Cached FRED fetch (refreshes hourly)."""
-    return load_series(series_id, start)
 
 
 def start_date_for(years: int | None) -> str | None:
@@ -41,7 +36,7 @@ lookback_label = st.sidebar.radio("Lookback window", list(LOOKBACKS), index=2, h
 start = start_date_for(LOOKBACKS[lookback_label])
 
 if st.sidebar.button("🔄 Refresh data", use_container_width=True):
-    get_series.clear()
+    load_one.clear()
     st.rerun()
 
 st.sidebar.markdown("---")
@@ -61,7 +56,7 @@ for i, s in enumerate(SERIES):
         with st.container(border=True):
             st.markdown(f"#### {s.label}")
             try:
-                df = get_series(s.series_id, start)
+                df = load_one(s.series_id, start)
                 df = apply_transform(df, s.transform)
             except MissingAPIKeyError as exc:
                 st.error(str(exc))

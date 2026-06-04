@@ -17,5 +17,7 @@ venv/
 # Local tooling / artifacts (not part of the app)
 .claude/
 .playwright-mcp/
-macro-dashboard*.png
-macro-dashboard*.jpeg
+# screenshots / generated images (none are app assets)
+*.png
+*.jpeg
+*.jpg

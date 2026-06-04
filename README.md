@@ -27,7 +27,9 @@ the [Observable Plot](https://observablehq.com/plot/) library, wrapped in
 
 ```
 .
-├── app.py                     # Streamlit entry point (layout + render loop)
+├── app.py                     # Page 1 — the dashboard (layout + render loop)
+├── pages/
+│   └── 1_📊_Correlation_&_Analytics.py   # Page 2 — correlation & statistics
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
@@ -37,10 +39,16 @@ the [Observable Plot](https://observablehq.com/plot/) library, wrapped in
 ├── src/
 │   ├── config.py              # the nine-series registry + value formatting
 │   ├── fred.py                # FRED fetch, transforms, API-key loading
-│   └── charts.py              # Observable Plot HTML builder
+│   ├── data.py                # shared @st.cache_data loaders (used by both pages)
+│   ├── charts.py              # Observable Plot HTML builder (dashboard)
+│   ├── analytics.py           # panel alignment, correlation, rolling, lead/lag, regression
+│   └── analytics_charts.py    # Observable Plot builders (heatmap, scatter, etc.)
 └── scripts/
     └── preview_data.py        # pull every series live and print it (sanity check)
 ```
+
+This is a **Streamlit multipage app**: `app.py` is the dashboard, and the file in
+`pages/` becomes a second page in the sidebar nav.
 
 ## 1. Get a free FRED API key
 
@@ -81,6 +89,27 @@ The app opens at <http://localhost:8501>.
 
 Secrets are encrypted by Streamlit and injected at runtime — they are never in the
 repo. `.streamlit/secrets.toml` is gitignored for the same reason.
+
+## Correlation & Analytics page
+
+The second page studies how the nine indicators *relate*. The key methodological
+choice: every series is resampled to a **common monthly frequency** and you correlate
+**changes** (year-over-year %, month-over-month %, or first differences) rather than
+raw levels. Most of these series trend over time, so correlating levels would produce
+spurious ~0.9 correlations driven purely by a shared time trend — correlating changes
+measures whether they genuinely move together.
+
+It includes:
+- **Correlation heatmap** (9×9, diverging color, Pearson or Spearman)
+- **Auto-insights** — strongest positive / inverse / largest-magnitude pairs
+- **Pairwise explorer** — scatter with OLS regression line, R², slope, and a
+  rolling-window correlation showing how a relationship evolves over time
+- **Lead/lag** — cross-correlation across ±12 months to spot leading indicators
+  (e.g. M2 money growth tends to lead CPI by roughly a year)
+- **Standardized overlay** — z-scored series on one scale to compare regimes
+
+All charts are Observable Plot. Controls (transform, method, lookback, rolling window)
+live in the sidebar and recompute everything live.
 
 ## How it works
 
