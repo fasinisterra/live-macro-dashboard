@@ -34,7 +34,8 @@ _CSS = """
 
 :root{
   --wsp-green:#37A686; --wsp-mint:#52F2B8; --wsp-slate:#2C403A; --wsp-sage:#6B8F89;
-  --wsp-ink:#0D0D0D; --wsp-muted:#6B7672; --wsp-border:#E2E5E3; --wsp-fog:#EEF1F0; --wsp-bg:#F2F2F2;
+  --wsp-ink:#0D0D0D; --wsp-muted:#6B7672; --wsp-border:#E2E5E3; --wsp-fog:#EEF1F0; --wsp-bg:#F4F0E6;
+  --wsp-cream:#FBF8F1; --wsp-beige:#F4F0E6; --wsp-sand:#EEE8DB; --wsp-warm-border:#E4DECF;
   --wsp-sans:"Montserrat","Helvetica Neue",Arial,sans-serif;
   --wsp-display:"Newsreader",Georgia,"Times New Roman",serif;
 }
@@ -43,7 +44,7 @@ _CSS = """
 html, body, .stApp, [data-testid="stAppViewContainer"]{
   font-family:var(--wsp-sans); color:var(--wsp-ink);
 }
-.stApp{ background:var(--wsp-bg); }
+.stApp{ background:linear-gradient(158deg, var(--wsp-cream) 0%, var(--wsp-beige) 55%, var(--wsp-sand) 100%) fixed; }
 [data-testid="stMain"] .stMarkdown p,
 [data-testid="stMain"] li{ font-family:var(--wsp-sans); }
 
@@ -62,11 +63,11 @@ h1, h2, h3, h4, [data-testid="stHeading"]{
   background:linear-gradient(90deg,var(--wsp-green),var(--wsp-mint)); }
 
 /* ---- sidebar ---- */
-[data-testid="stSidebar"]{ background:var(--wsp-fog); border-right:1px solid var(--wsp-border); }
+[data-testid="stSidebar"]{ background:var(--wsp-cream); border-right:1px solid var(--wsp-warm-border); }
 [data-testid="stSidebar"] *{ font-family:var(--wsp-sans); }
 
 /* ---- brand logo (top of sidebar) ---- */
-.wsp-logo{ padding:.5rem .15rem .7rem; border-bottom:1px solid var(--wsp-border); margin-bottom:.6rem; }
+.wsp-logo{ padding:.5rem .15rem .7rem; border-bottom:1px solid var(--wsp-warm-border); margin-bottom:.6rem; }
 .wsp-logo svg{ height:30px; width:auto; display:block; }
 
 /* ---- "figure" cards: white on soft gray, like the report ---- */
