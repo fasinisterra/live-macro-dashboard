@@ -20,10 +20,11 @@ CHART_HEIGHT = 230  # px drawn by Plot; the iframe is sized a touch taller in ap
 _TEMPLATE = r"""
 <div id="__DIVID__" class="plot-wrap"></div>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
   body { margin: 0; }
   .plot-wrap {
     width: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
   }
   .plot-wrap figure { margin: 0; }
 </style>
@@ -57,7 +58,7 @@ _TEMPLATE = r"""
       Plot.lineY(data, { x: "date", y: "value", stroke: color, strokeWidth: 1.75 }),
     ];
     if (zeroLine) {
-      marks.push(Plot.ruleY([0], { stroke: "#9ca3af", strokeWidth: 1, strokeDasharray: "3,3" }));
+      marks.push(Plot.ruleY([0], { stroke: "#2C403A", strokeOpacity: 0.4, strokeWidth: 1, strokeDasharray: "3,3" }));
     }
     marks.push(Plot.dot([last], { x: "date", y: "value", fill: color, r: 3.5, stroke: "white", strokeWidth: 1.5 }));
     marks.push(Plot.tip(data, Plot.pointerX({ x: "date", y: "value" })));
@@ -65,7 +66,7 @@ _TEMPLATE = r"""
     const plot = Plot.plot({
       width, height,
       marginLeft: 54, marginRight: 14, marginTop: 12, marginBottom: 26,
-      style: { background: "transparent", color: "#475569", fontSize: "11px" },
+      style: { background: "transparent", color: "#2C403A", fontSize: "11px", fontFamily: "Montserrat, sans-serif" },
       x: { type: "utc", label: null, grid: false, ticks: 5 },
       y: { label: null, grid: true, ticks: 5, domain },
       marks,

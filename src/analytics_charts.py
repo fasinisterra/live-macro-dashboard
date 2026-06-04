@@ -1,8 +1,9 @@
-"""Observable Plot chart builders for the analytics page.
+"""Observable Plot chart builders for the analytics page (Wall Street Prompt skin).
 
 Same approach as ``src/charts.py``: each function returns a self-contained HTML
 snippet that imports Observable Plot from the jsDelivr ESM CDN, embeds its data as
-JSON, and renders responsively. Dropped into Streamlit with ``components.html``.
+JSON, and renders responsively. Styled to the WSP template — Montserrat type,
+slate axes, and a slate→green diverging palette for correlations.
 """
 
 from __future__ import annotations
@@ -13,19 +14,28 @@ import pandas as pd
 
 PLOT_CDN = "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm"
 
-# JS shell: defines `width` and `HEIGHT`, runs `render()` which must build `plot`.
+# Brand tokens (mirror src/branding.py).
+GREEN = "#37A686"
+MINT = "#52F2B8"
+SLATE = "#2C403A"
+FOG = "#EEF1F0"
+BORDER = "#E2E5E3"
+
+# JS shell: defines `width`, `HEIGHT`, and `BASE_STYLE`; runs `render()` which
+# must build `plot`.
 _SHELL = """
 <div id="__DIV__" class="plot-wrap"></div>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
   body { margin: 0; }
-  .plot-wrap { width: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .plot-wrap { width: 100%; font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif; }
   .plot-wrap figure { margin: 0; }
 </style>
 <script type="module">
   import * as Plot from "__CDN__";
-  import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
   const el = document.getElementById("__DIV__");
   const HEIGHT = __HEIGHT__;
+  const BASE_STYLE = { background: "transparent", color: "#2C403A", fontSize: "11px", fontFamily: "Montserrat, sans-serif" };
   function render() {
     const width = el.clientWidth || 700;
     let plot;
@@ -61,16 +71,17 @@ def heatmap_html(corr: pd.DataFrame, short: dict[str, str], height: int = 470) -
         "const data = " + json.dumps(records) + ";\n"
         "const domain = " + json.dumps(domain) + ";\n"
         "plot = Plot.plot({\n"
-        "  width, height: HEIGHT,\n"
+        "  width, height: HEIGHT, style: BASE_STYLE,\n"
         "  marginLeft: 78, marginTop: 58, marginRight: 14, marginBottom: 6,\n"
         "  padding: 0.03,\n"
         "  x: { axis: 'top', domain, tickRotate: -40, label: null },\n"
         "  y: { domain, label: null },\n"
-        "  color: { type: 'diverging', scheme: 'RdBu', domain: [-1, 1], pivot: 0, legend: true, label: 'Correlation (r)' },\n"
+        "  color: { type: 'linear', domain: [-1, 0, 1], range: ['#2C403A', '#EEF1F0', '#37A686'],\n"
+        "    legend: true, label: 'Correlation (r)' },\n"
         "  marks: [\n"
         "    Plot.cell(data, { x: 'x', y: 'y', fill: 'r', inset: 0.5 }),\n"
         "    Plot.text(data, { x: 'x', y: 'y', text: d => d.r == null ? '' : d.r.toFixed(2),\n"
-        "      fill: d => (d.r != null && Math.abs(d.r) > 0.55) ? 'white' : '#1a2230', fontSize: 11 }),\n"
+        "      fill: d => (d.r != null && Math.abs(d.r) > 0.5) ? 'white' : '#2C403A', fontSize: 11 }),\n"
         "  ],\n"
         "});\n"
     )
@@ -83,15 +94,15 @@ def scatter_regression_html(df: pd.DataFrame, x_label: str, y_label: str, color:
     body = (
         "const data = " + json.dumps(records) + ";\n"
         "plot = Plot.plot({\n"
-        "  width, height: HEIGHT,\n"
+        "  width, height: HEIGHT, style: BASE_STYLE,\n"
         "  marginLeft: 54, marginBottom: 40, marginRight: 16, marginTop: 12,\n"
         "  grid: true,\n"
         "  x: { label: " + json.dumps(x_label + "  →") + " },\n"
         "  y: { label: " + json.dumps("↑  " + y_label) + " },\n"
         "  marks: [\n"
-        "    Plot.ruleX([0], { stroke: '#e2e8f0' }), Plot.ruleY([0], { stroke: '#e2e8f0' }),\n"
-        "    Plot.dot(data, { x: 'x', y: 'y', r: 2.6, fill: " + json.dumps(color) + ", fillOpacity: 0.45 }),\n"
-        "    Plot.linearRegressionY(data, { x: 'x', y: 'y', stroke: '#0f172a', strokeWidth: 1.6 }),\n"
+        "    Plot.ruleX([0], { stroke: '#E2E5E3' }), Plot.ruleY([0], { stroke: '#E2E5E3' }),\n"
+        "    Plot.dot(data, { x: 'x', y: 'y', r: 2.6, fill: " + json.dumps(color) + ", fillOpacity: 0.5 }),\n"
+        "    Plot.linearRegressionY(data, { x: 'x', y: 'y', stroke: '#2C403A', strokeWidth: 1.6 }),\n"
         "  ],\n"
         "});\n"
     )
@@ -105,14 +116,14 @@ def rolling_corr_html(s: pd.Series, color: str, height: int = 240) -> str:
         "const raw = " + json.dumps(records) + ";\n"
         "const data = raw.map(d => ({ date: new Date(d.date + 'T00:00:00Z'), value: d.value }));\n"
         "plot = Plot.plot({\n"
-        "  width, height: HEIGHT,\n"
+        "  width, height: HEIGHT, style: BASE_STYLE,\n"
         "  marginLeft: 40, marginBottom: 26, marginRight: 14, marginTop: 12,\n"
         "  x: { type: 'utc', label: null, ticks: 6 },\n"
         "  y: { domain: [-1, 1], grid: true, label: null, ticks: 5 },\n"
         "  marks: [\n"
-        "    Plot.ruleY([0], { stroke: '#9ca3af', strokeDasharray: '3,3' }),\n"
-        "    Plot.areaY(data, { x: 'date', y: 'value', fill: " + json.dumps(color) + ", fillOpacity: 0.08 }),\n"
-        "    Plot.lineY(data, { x: 'date', y: 'value', stroke: " + json.dumps(color) + ", strokeWidth: 1.6 }),\n"
+        "    Plot.ruleY([0], { stroke: '#2C403A', strokeOpacity: 0.4, strokeDasharray: '3,3' }),\n"
+        "    Plot.areaY(data, { x: 'date', y: 'value', fill: " + json.dumps(color) + ", fillOpacity: 0.10 }),\n"
+        "    Plot.lineY(data, { x: 'date', y: 'value', stroke: " + json.dumps(color) + ", strokeWidth: 1.8 }),\n"
         "  ],\n"
         "});\n"
     )
@@ -126,14 +137,14 @@ def cross_corr_html(df: pd.DataFrame, lead_label: str, peak_lag: int, height: in
         "const data = " + json.dumps(records) + ";\n"
         "const peak = " + json.dumps(int(peak_lag)) + ";\n"
         "plot = Plot.plot({\n"
-        "  width, height: HEIGHT,\n"
+        "  width, height: HEIGHT, style: BASE_STYLE,\n"
         "  marginLeft: 40, marginBottom: 38, marginRight: 14, marginTop: 12,\n"
         "  x: { label: " + json.dumps("Lag (months) — positive ⇒ " + lead_label + " leads") + ", tickFormat: '+d' },\n"
         "  y: { domain: [-1, 1], grid: true, label: 'r' },\n"
         "  marks: [\n"
-        "    Plot.ruleY([0], { stroke: '#94a3b8' }),\n"
+        "    Plot.ruleY([0], { stroke: '#2C403A' }),\n"
         "    Plot.barY(data, { x: 'lag', y: 'corr',\n"
-        "      fill: d => d.corr >= 0 ? '#2563eb' : '#dc2626',\n"
+        "      fill: d => d.corr >= 0 ? '#37A686' : '#2C403A',\n"
         "      fillOpacity: d => d.lag === peak ? 1 : 0.5 }),\n"
         "  ],\n"
         "});\n"
@@ -151,14 +162,14 @@ def zscore_overlay_html(long_df: pd.DataFrame, labels: list[str], colors: list[s
         "const raw = " + json.dumps(records) + ";\n"
         "const data = raw.map(d => ({ ...d, date: new Date(d.date + 'T00:00:00Z') }));\n"
         "plot = Plot.plot({\n"
-        "  width, height: HEIGHT,\n"
+        "  width, height: HEIGHT, style: BASE_STYLE,\n"
         "  marginLeft: 40, marginBottom: 26, marginRight: 16, marginTop: 12,\n"
         "  x: { type: 'utc', label: null, ticks: 6 },\n"
         "  y: { grid: true, label: 'z-score' },\n"
         "  color: { domain: " + json.dumps(labels) + ", range: " + json.dumps(colors) + ", legend: true },\n"
         "  marks: [\n"
-        "    Plot.ruleY([0], { stroke: '#cbd5e1' }),\n"
-        "    Plot.lineY(data, { x: 'date', y: 'value', stroke: 'series', strokeWidth: 1.5 }),\n"
+        "    Plot.ruleY([0], { stroke: '#C9D2CE' }),\n"
+        "    Plot.lineY(data, { x: 'date', y: 'value', stroke: 'series', strokeWidth: 1.6 }),\n"
         "  ],\n"
         "});\n"
     )

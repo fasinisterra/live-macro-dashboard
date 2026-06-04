@@ -14,10 +14,12 @@ import streamlit.components.v1 as components
 
 from src import analytics as A
 from src import analytics_charts as AC
+from src.branding import apply_branding, header
 from src.data import load_frames, load_one
 from src.fred import MissingAPIKeyError
 
-st.set_page_config(page_title="Macro Analytics", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Macro Analytics", layout="wide")
+apply_branding()
 
 KEYS = A.KEYS
 LABEL = A.LABEL
@@ -38,7 +40,7 @@ def _label_to_key(label: str) -> str:
 
 
 # ----- Sidebar controls --------------------------------------------------------
-st.sidebar.title("📊 Analytics controls")
+st.sidebar.title("Analytics controls")
 transform = TRANSFORM_UI[st.sidebar.radio("Transform", list(TRANSFORM_UI), index=0,
                                           help="Correlate changes, not trending levels, to avoid spurious correlation.")]
 method = st.sidebar.radio("Correlation method", ["pearson", "spearman"], index=0,
@@ -47,12 +49,12 @@ method = st.sidebar.radio("Correlation method", ["pearson", "spearman"], index=0
 lookback_label = st.sidebar.radio("Lookback window", list(LOOKBACKS), index=2, horizontal=True)
 window = st.sidebar.select_slider("Rolling-corr window (months)", options=[12, 24, 36], value=24)
 
-if st.sidebar.button("🔄 Refresh data", use_container_width=True):
+if st.sidebar.button("Refresh data", use_container_width=True):
     load_one.clear()  # clears the cached FRED fetches shared by both pages
     st.rerun()
 
 # ----- Load + build panel ------------------------------------------------------
-st.title("Correlation & Statistical Analytics")
+header("Correlation & Statistical Analytics")
 
 try:
     frames = load_frames(None)  # full history, cached; we slice the window in-memory

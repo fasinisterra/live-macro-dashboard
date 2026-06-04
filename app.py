@@ -12,12 +12,14 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
+from src.branding import apply_branding, header
 from src.charts import CHART_HEIGHT, observable_plot_html
 from src.config import SERIES
 from src.data import load_one
 from src.fred import MissingAPIKeyError, apply_transform, latest_and_delta
 
-st.set_page_config(page_title="Macro Dashboard", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Macro Dashboard", layout="wide")
+apply_branding()
 
 LOOKBACKS = {"1Y": 1, "3Y": 3, "5Y": 5, "10Y": 10, "Max": None}
 
@@ -29,13 +31,13 @@ def start_date_for(years: int | None) -> str | None:
 
 
 # ----- Sidebar -----------------------------------------------------------------
-st.sidebar.title("📈 Macro Dashboard")
+st.sidebar.title("Macro Dashboard")
 st.sidebar.caption("Live U.S. macro indicators, straight from FRED.")
 
 lookback_label = st.sidebar.radio("Lookback window", list(LOOKBACKS), index=2, horizontal=True)
 start = start_date_for(LOOKBACKS[lookback_label])
 
-if st.sidebar.button("🔄 Refresh data", use_container_width=True):
+if st.sidebar.button("Refresh data", use_container_width=True):
     load_one.clear()
     st.rerun()
 
@@ -44,7 +46,7 @@ st.sidebar.markdown("**Source:** [FRED](https://fred.stlouisfed.org) · Federal 
 st.sidebar.caption("Data cached for 1 hour. Charts rendered with Observable Plot.")
 
 # ----- Header ------------------------------------------------------------------
-st.title("Live Macro Dashboard")
+header("Live Macro Dashboard")
 now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 st.caption(f"Nine indicators · lookback {lookback_label} · refreshed {now}")
 

@@ -1,4 +1,4 @@
-# 📈 Live Macro Dashboard
+# Live Macro Dashboard
 
 A single-page dashboard that pulls nine U.S. macro indicators **live from the
 [FRED API](https://fred.stlouisfed.org/docs/api/fred/)** and charts each one with
@@ -29,7 +29,7 @@ the [Observable Plot](https://observablehq.com/plot/) library, wrapped in
 .
 ├── app.py                     # Page 1 — the dashboard (layout + render loop)
 ├── pages/
-│   └── 1_📊_Correlation_&_Analytics.py   # Page 2 — correlation & statistics
+│   └── 1_Correlation_and_Analytics.py    # Page 2 — correlation & statistics
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
@@ -53,7 +53,7 @@ This is a **Streamlit multipage app**: `app.py` is the dashboard, and the file i
 ## 1. Get a free FRED API key
 
 Create a free account and request a key (delivered instantly):
-👉 https://fredaccount.stlouisfed.org/apikeys
+https://fredaccount.stlouisfed.org/apikeys
 
 ## 2. Run locally
 
